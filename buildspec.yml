@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "Installing dependencies..."
+      - pip install --upgrade pip
+
+  build:
+    commands:
+      - echo "Packaging index-photos Lambda..."
+      - cd index-photos
+      - if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; fi
+      - zip -r ../index-photos.zip .
+      - cd ..
+
+      - echo "Packaging search-photos Lambda..."
+      - cd search-photos
+      - if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; fi
+      - zip -r ../search-photos.zip .
+      - cd ..
+
+artifacts:
+  files:
+    - index-photos.zip
+    - search-photos.zip
