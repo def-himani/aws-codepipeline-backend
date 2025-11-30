@@ -25,4 +25,9 @@ phases:
 artifacts:
   files:
     - index-photos.zip
-    - search-photos.zip
+  name: IndexArtifact
+
+secondary-artifacts:
+  SearchArtifact:
+    files:
+      - search-photos.zip
