@@ -26,9 +26,11 @@ artifacts:
   files:
     - index-photos.zip
   name: IndexArtifact
+  discard-paths: yes
 
 secondary-artifacts:
   SearchArtifact:
     files:
       - search-photos.zip
     name: SearchArtifact
+    discard-paths: yes
