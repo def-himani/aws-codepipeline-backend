@@ -3,33 +3,43 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.11
+      python: 3.12
     commands:
-      - echo "Installing dependencies..."
-      - pip install --upgrade pip
+      - echo "Installing dependencies for search-photos..."
+      - cd search-photos
+      - pip install -r requirements.txt -t package || echo "No requirements.txt found"
+      - cd ..
+      - echo "Installing dependencies for index-photos..."
+      - cd index-photos
+      - pip install -r requirements.txt -t package || echo "No requirements.txt found"
+      - cd ..
 
   build:
     commands:
-      - echo "Packaging index-photos Lambda..."
-      - cd index-photos
-      - if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; fi
-      - zip -r ../index-photos.zip .
-      - cd ..
-
+      # SEARCH PHOTOS LAMBDA
       - echo "Packaging search-photos Lambda..."
       - cd search-photos
-      - if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; fi
-      - zip -r ../search-photos.zip .
-      - cd ..
+      - cp lambda_function.py package/
+      - cd package
+      - zip -r ../../lambda_search.zip .
+      - cd ../..
+      
+      # INDEX PHOTOS LAMBDA
+      - echo "Packaging index-photos Lambda..."
+      - cd index-photos
+      - cp lambda_function.py package/
+      - cd package
+      - zip -r ../../lambda_index.zip .
+      - cd ../..
 
   post_build:
     commands:
       - echo "Deploying search-photos Lambda..."
-      - aws lambda update-function-code --function-name search-photos --zip-file fileb://search-photos.zip
+      - aws lambda update-function-code --function-name search-photos --zip-file fileb://lambda_search.zip
       - echo "Deploying index-photos Lambda..."
-      - aws lambda update-function-code --function-name index-photos --zip-file fileb://index-photos.zip
+      - aws lambda update-function-code --function-name index-photos --zip-file fileb://lambda_index.zip
 
 artifacts:
   files:
-    - index-photos.zip
-    - search-photos.zip
+    - lambda_search.zip
+    - lambda_index.zip
