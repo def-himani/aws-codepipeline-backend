@@ -1,5 +1,4 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
@@ -8,37 +7,23 @@ phases:
       - echo "Installing dependencies for search-photos..."
       - cd search-photos
       - pip install -r requirements.txt -t package || echo "No requirements.txt found"
-      - cd ..
-      - echo "Installing dependencies for index-photos..."
-      - cd index-photos
-      - pip install -r requirements.txt -t package || echo "No requirements.txt found"
-      - cd ..
-
-  build:
-    commands:
-      # SEARCH PHOTOS LAMBDA
-      - echo "Packaging search-photos Lambda..."
-      - cd search-photos
       - cp lambda_function.py package/
       - cd package
       - zip -r ../../lambda_search.zip .
       - cd ../..
-      
-      # INDEX PHOTOS LAMBDA
-      - echo "Packaging index-photos Lambda..."
+      - echo "Installing dependencies for index-photos..."
       - cd index-photos
+      - pip install -r requirements.txt -t package || echo "No requirements.txt found"
       - cp lambda_function.py package/
       - cd package
       - zip -r ../../lambda_index.zip .
       - cd ../..
-
   post_build:
     commands:
       - echo "Deploying search-photos Lambda..."
       - aws lambda update-function-code --function-name search-photos --zip-file fileb://lambda_search.zip
       - echo "Deploying index-photos Lambda..."
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://lambda_index.zip
-
 artifacts:
   files:
     - lambda_search.zip
